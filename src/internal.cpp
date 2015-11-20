@@ -10,7 +10,7 @@ pthread_mutex_t QUEUES_MUTEX = PTHREAD_MUTEX_INITIALIZER;
 //data to be passed to the worker thread -- we will pool them
 struct WorkerThreadArgs {
 
-	
+
 	pthread_mutex_t endMutex;
 	bool 			shouldEnd;
 
@@ -62,7 +62,7 @@ pthread_t _createWorkerThread(){
 
 void _destroyWorkerThread(pthread_t id){
 
-	pthread_kill(id, SIGTERM);
+	pthread_cancel(id);
 
 }
 

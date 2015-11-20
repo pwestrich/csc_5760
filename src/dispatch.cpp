@@ -64,12 +64,12 @@ dispatch_queue_t* dispatch_create_queue(const std::string &name, const dispatch_
 
 		newQ->type = type;
 		newQ->identifier = name;
+		pthread_mutex_init(&newQ->queueMutex, NULL);
 
 	if (type == QUEUE_SERIAL || num == 1){
 
 		newQ->numThreads = 1;
 		newQ->threads.push_back(_createWorkerThread());
-
 		
 
 	} else {
