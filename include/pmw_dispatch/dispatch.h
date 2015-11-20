@@ -2,8 +2,12 @@
 #ifndef PMW_DISPATCH_H
 #define PMW_DISPATCH_H
 
-#include <functional>
 #include <string>
+
+const std::string MAIN_QUEUE = "main";
+
+typedef void (*queue_function)(void *args);
+enum dispatch_queue_type : uint8_t {QUEUE_SERIAL, QUEUE_CONCORRENT};
 
 struct dispatch_queue_t;
 
@@ -14,12 +18,15 @@ void dispatch_init();
 void disaptch_release();
 
 //accepts a function pointer to be added to the queue
-bool dispatch_async_f(const dispatch_queue_t &queue, void (*work)(void *args), void *args);
-
-//accets a c++11 function object to be added to the queue
-bool dispatch_async(const dispatch_queue_t &queue, std::function<void (void *args)> work, void *args);
+bool dispatch_async(const dispatch_queue_t &queue, queue_function work, void *args);
 
 //gets a queue by name
 dispatch_queue_t* dispatch_get_queue(const std::string &name);
+
+//creates a queue and returns a reference to it
+dispatch_queue_t* dispatch_create_queue(const std::string &name, const dispatch_queue_type type = QUEUE_SERIAL, const int num = 0);
+
+//destroys a queue by name
+void dispatch_destroy_queue(const std::string &name);
 
 #endif

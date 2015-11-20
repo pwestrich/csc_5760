@@ -11,9 +11,12 @@ SYS := $(shell $(CC) -dumpmachine)
 
 run: all
 
+	$(MAKE) -C ./test run
+
 all: setup
 
 	$(MAKE) -C ./src all
+	$(MAKE) -C ./test all
 
 cleanup: setup
 
@@ -26,7 +29,7 @@ ifneq (, $(findstring apple, $(SYS)))
 $(info System detected to be Mac OS X)
 
 INC_DIRS := -I../include
-LIB_DIRS := 
+LIB_DIRS := -L../lib
 LIBS 	 := -lpthread
 
 RM 		 := rm -f
@@ -43,7 +46,7 @@ else ifneq (, $(findstring linux, $(SYS)))
 $(info System detected to be GNU/Linux)
 
 INC_DIRS := -I../include
-LIB_DIRS := 
+LIB_DIRS := -L../lib
 LIBS 	 := -lpthread
 
 RM 		 := rm -f
