@@ -21,6 +21,7 @@ int main(const int argc, const char **argv){
 
 	dispatch_init();
 
+	//test the main queue
 	for (int i = 0; i < 10; ++i){
 
 		int *args =new int;
@@ -32,6 +33,39 @@ int main(const int argc, const char **argv){
 	sleep(1);
 	std::cout << "Waiting..." << std::endl;
 	sleep(10);
+
+	//now try making a new queue
+	dispatch_queue_t *newQueue = dispatch_create_queue("testQ", QUEUE_SERIAL);
+
+	//test the new queue
+	for (int i = 0; i < 10; ++i){
+
+		int *args =new int;
+		*args = i;
+		dispatch_async(newQueue, test, static_cast<void*>(args));
+
+	}
+
+	sleep(1);
+	std::cout << "Waiting again......" << std::endl;
+	sleep(10);
+
+	//try making a concurrent queue
+	dispatch_queue_t *newQueue2 = dispatch_create_queue("testQ", QUEUE_CONCORRENT, 2);
+
+	//test the concurrent queue
+	for (int i = 0; i < 10; ++i){
+
+		int *args =new int;
+		*args = i;
+		dispatch_async(newQueue, test, static_cast<void*>(args));
+
+	}
+
+	sleep(1);
+	std::cout << "Waiting take three..." << std::endl;
+	sleep(10);
+
 	disaptch_release();
 	return 0;
 
