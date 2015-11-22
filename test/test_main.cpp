@@ -51,7 +51,7 @@ int main(const int argc, const char **argv){
 	sleep(10);
 
 	//try making a concurrent queue
-	dispatch_queue_t *newQueue2 = dispatch_create_queue("testQ", QUEUE_CONCORRENT, 2);
+	dispatch_queue_t *newQueue2 = dispatch_create_queue("testQ2", QUEUE_CONCORRENT, 2);
 
 	//test the concurrent queue
 	for (int i = 20; i < 30; ++i){
