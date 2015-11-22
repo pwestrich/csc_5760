@@ -6,6 +6,7 @@
 #include <string>
 #include <vector>
 
+#include <unistd.h>
 #include <pthread.h>
 #include <semaphore.h>
 
