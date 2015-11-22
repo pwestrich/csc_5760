@@ -24,7 +24,7 @@ int main(const int argc, const char **argv){
 	//test the main queue
 	for (int i = 0; i < 10; ++i){
 
-		int *args =new int;
+		int *args = new int;
 		*args = i;
 		dispatch_async(dispatch_get_queue(MAIN_QUEUE), test, static_cast<void*>(args));
 
@@ -38,9 +38,9 @@ int main(const int argc, const char **argv){
 	dispatch_queue_t *newQueue = dispatch_create_queue("testQ", QUEUE_SERIAL);
 
 	//test the new queue
-	for (int i = 0; i < 10; ++i){
+	for (int i = 10; i < 20; ++i){
 
-		int *args =new int;
+		int *args = new int;
 		*args = i;
 		dispatch_async(newQueue, test, static_cast<void*>(args));
 
@@ -54,11 +54,11 @@ int main(const int argc, const char **argv){
 	dispatch_queue_t *newQueue2 = dispatch_create_queue("testQ", QUEUE_CONCORRENT, 2);
 
 	//test the concurrent queue
-	for (int i = 0; i < 10; ++i){
+	for (int i = 20; i < 30; ++i){
 
-		int *args =new int;
+		int *args = new int;
 		*args = i;
-		dispatch_async(newQueue, test, static_cast<void*>(args));
+		dispatch_async(newQueue2, test, static_cast<void*>(args));
 
 	}
 
