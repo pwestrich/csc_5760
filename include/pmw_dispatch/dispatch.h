@@ -6,7 +6,7 @@
 
 const std::string MAIN_QUEUE = "main";
 
-typedef void (*queue_function)(void *args);
+typedef void* (*queue_function)(void *args);
 enum dispatch_queue_type : uint8_t {QUEUE_SERIAL, QUEUE_CONCORRENT};
 
 struct dispatch_queue_t;
@@ -18,7 +18,7 @@ void dispatch_init();
 void disaptch_release();
 
 //accepts a function pointer to be added to the queue
-bool dispatch_async(const dispatch_queue_t &queue, queue_function work, void *args);
+bool dispatch_async(dispatch_queue_t *queue, queue_function work, void *args);
 
 //gets a queue by name
 dispatch_queue_t* dispatch_get_queue(const std::string &name);

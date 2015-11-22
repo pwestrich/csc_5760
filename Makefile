@@ -18,9 +18,10 @@ all: setup
 	$(MAKE) -C ./src all
 	$(MAKE) -C ./test all
 
-cleanup: setup
+clean: setup
 
 	$(MAKE) -C ./src clean
+	$(MAKE) -C ./test clean
 
 setup:
 
@@ -52,8 +53,6 @@ LIBS 	 := -lpthread
 RM 		 := rm -f
 MV 		 := mv
 MAKE 	 := make
-
-$(error Set LIBS and INC_DIRS flags first before trying to build on Linux!)
 
 else 
 # Do other things

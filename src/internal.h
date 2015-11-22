@@ -7,6 +7,7 @@
 #include <vector>
 
 #include <pthread.h>
+#include <semaphore.h>
 
 #include <pmw_dispatch/dispatch.h>
 
@@ -20,9 +21,10 @@ struct dispatch_queue_t {
 	dispatch_queue_type 		type;		//the type of queue
 	std::string 				identifier;	//the string identifier for the queue
 	std::queue<queue_function> 	queue;		//the queue of functions
-	std::queue<void*> args;					//queue of arguments to functions
+	std::queue<void*> 			args;		//queue of arguments to functions
 	std::vector<pthread_t>		threads;	//worker threads
 	pthread_mutex_t 			queueMutex;	//mutex to get in the queue
+	sem_t						queueSem;	//semaphore to indicate to the worker threads that there is work to do
 
 };
 
@@ -34,7 +36,7 @@ void *dispatchWorkerThread(void *args);
 
 void _addQueueToList(dispatch_queue_t *queue);
 
-pthread_t _createWorkerThread();
+pthread_t _createWorkerThread(dispatch_queue_t *queue);
 void _destroyWorkerThread(pthread_t id);
 
 dispatch_queue_t *_searchForQueue(const std::string &name);

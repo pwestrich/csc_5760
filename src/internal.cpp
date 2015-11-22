@@ -1,4 +1,5 @@
 
+#include <cassert>
 #include <iostream>
 #include <vector>
 
@@ -10,21 +11,34 @@ pthread_mutex_t QUEUES_MUTEX = PTHREAD_MUTEX_INITIALIZER;
 //data to be passed to the worker thread -- we will pool them
 struct WorkerThreadArgs {
 
-
-	pthread_mutex_t endMutex;
-	bool 			shouldEnd;
-
-
+	dispatch_queue_t *queue;	//the queue this thread works for
 
 };
 
 //function to do work for a dispatch queue
 void *dispatchWorkerThread(void *args){
 
+	dispatch_queue_t *queue = static_cast<dispatch_queue_t*>(args);
+
 	while (true){
 
-		std::cout << "Idling..." << std::endl;
-		sleep(-1);	//idle
+		sem_wait(&queue->queueSem);
+
+		pthread_mutex_lock(&queue->queueMutex);
+		
+			queue_function work = queue->queue.front();
+			void *args = queue->args.front();
+
+			queue->args.pop();
+			queue->queue.pop();
+
+		pthread_mutex_unlock(&queue->queueMutex);
+
+		if (work){
+
+			work(args);
+
+		}
 
 	}
 
@@ -42,12 +56,12 @@ void _addQueueToList(dispatch_queue_t *queue){
 
 }
 
-pthread_t _createWorkerThread(){
+pthread_t _createWorkerThread(dispatch_queue_t *queue){
 
-	WorkerThreadArgs *args = new WorkerThreadArgs;
+	assert(queue);
 
 	pthread_t thread;
-	int rc = pthread_create(&thread, NULL, dispatchWorkerThread, args);
+	int rc = pthread_create(&thread, NULL, dispatchWorkerThread, queue);
 
 	if (rc < 0){
 

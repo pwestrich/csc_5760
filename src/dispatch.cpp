@@ -22,9 +22,15 @@ void dispatch_init(){
 //uninitializes the dispatch environment
 void disaptch_release(){
 
+	//lock mutex for the queues
+	pthread_mutex_lock(&QUEUES_MUTEX);
+
 	for (size_t i = 0; i < queues->size(); ++i){
 
 		dispatch_queue_t *queue = (*queues)[i];
+
+		//lock queue's mutex
+		pthread_mutex_lock(&queue->queueMutex);
 
 		//halt every thread
 		for (int i = 0; i < queue->numThreads; ++i){
@@ -33,6 +39,9 @@ void disaptch_release(){
 
 		}
 
+		//destroy mutex and queue
+		pthread_mutex_destroy(&queue->queueMutex);
+		sem_destroy(&queue->queueSem);
 		delete queue;
 
 	}
@@ -42,9 +51,20 @@ void disaptch_release(){
 }
 
 //accepts a function pointer to be added to the queue
-bool dispatch_async(const dispatch_queue_t &queue, queue_function work, void *args){
+bool dispatch_async(dispatch_queue_t *queue, queue_function work, void *args){
 
-	return false;
+	if (queue && work){
+
+		pthread_mutex_lock(&queue->queueMutex);		//lock queue mutex
+			queue->queue.push(work);				//push work and arguments
+			queue->args.push(args);
+		pthread_mutex_unlock(&queue->queueMutex);	//inlock mutex
+
+		sem_post(&queue->queueSem);					//post semaphore to tell worker functions to work
+
+		return true;
+
+	} else return false;
 
 }
 
@@ -65,11 +85,12 @@ dispatch_queue_t* dispatch_create_queue(const std::string &name, const dispatch_
 		newQ->type = type;
 		newQ->identifier = name;
 		pthread_mutex_init(&newQ->queueMutex, NULL);
+		sem_init(&newQ->queueSem, false, 0);
 
 	if (type == QUEUE_SERIAL || num == 1){
 
 		newQ->numThreads = 1;
-		newQ->threads.push_back(_createWorkerThread());
+		newQ->threads.push_back(_createWorkerThread(newQ));
 		
 
 	} else {
@@ -78,7 +99,7 @@ dispatch_queue_t* dispatch_create_queue(const std::string &name, const dispatch_
 
 		for (int i = 0; i < num; ++i){
 
-			newQ->threads.push_back(_createWorkerThread());
+			newQ->threads.push_back(_createWorkerThread(newQ));
 
 		}
 
@@ -97,6 +118,9 @@ void dispatch_destroy_queue(const std::string &name){
 
 	if (queue){
 
+		//lock queue's mutex
+		pthread_mutex_lock(&queue->queueMutex);
+
 		//halt every thread
 		for (int i = 0; i < queue->numThreads; ++i){
 
@@ -104,6 +128,9 @@ void dispatch_destroy_queue(const std::string &name){
 
 		}
 
+		//destroy mutex and queue
+		pthread_mutex_destroy(&queue->queueMutex);
+		sem_destroy(&queue->queueSem);
 		delete queue;
 
 	}
