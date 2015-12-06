@@ -10,7 +10,6 @@
 
 const int64_t SIZE		  = 1000;
 const int64_t NUM_THREADS = 4;
-const int64_t WAIT_TIME	  = 1000000;
 
 int main(const int argc, const char **argv){
 
@@ -42,8 +41,6 @@ int main(const int argc, const char **argv){
 	const double multiplyElapsed = multiplyEnd - multiplyStart;
 	
 	std::cout << "Multiply finished. Took " << multiplyElapsed << " seconds." << std::endl;
-
-	sleep(WAIT_TIME);
 
 	destroyMatrix(mat1);
 	destroyMatrix(mat2);
