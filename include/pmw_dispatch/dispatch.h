@@ -20,6 +20,9 @@ void disaptch_release();
 //accepts a function pointer to be added to the queue
 bool dispatch_async(dispatch_queue_t *queue, queue_function work, void *args);
 
+//adds a function to the queue and waits for its completion
+bool dispatch_sync(dispatch_queue_t *queue, queue_function work, void *args);
+
 //gets a queue by name
 dispatch_queue_t* dispatch_get_queue(const std::string &name);
 

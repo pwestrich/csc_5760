@@ -22,21 +22,27 @@ void *dispatchWorkerThread(void *args){
 
 	while (true){
 
-		sem_wait(&queue->queueSem);
+		sem_wait(&queue->queueSem);	//wait for work
 
-		pthread_mutex_lock(&queue->queueMutex);
-		
-			queue_function work = queue->queue.front();
-			void *args = queue->args.front();
-
-			queue->args.pop();
+		pthread_mutex_lock(&queue->queueMutex);	//lock function list
+			
+			queue_item *item = queue->queue.front();
 			queue->queue.pop();
 
-		pthread_mutex_unlock(&queue->queueMutex);
+		pthread_mutex_unlock(&queue->queueMutex); //unlock function list
 
-		if (work){
+		if (item->work){
 
-			work(args);
+			item->work(item->args); //do work
+
+			//check if we shoyuld post to someone waiting that this item is complete
+			if (item->should_post){
+
+				sem_post(&item->sem_complete);
+
+			}
+
+			delete item;
 
 		}
 

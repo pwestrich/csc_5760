@@ -21,6 +21,14 @@ $(TARGET): $(OBJECT) ../lib/libpmwdispatch.a
 
 	$(LINK) $(TARGET) $(OBJECT) $(LIBS) -lpmwdispatch
 
-test_main.o: test_main.cpp ../include/pmw_dispatch/dispatch.h
+test_main.o: test_main.cpp ../include/pmw_dispatch/dispatch.h matrix.h getRealTime.h
 
 	$(COMPILE) test_main.cpp
+
+matrix.o: matrix.cpp matrix.h
+
+	$(COMPILE) matrix.cpp
+
+getRealTime.o: getRealTime.cpp getRealTime.h
+
+	$(COMPILE) getRealTime.cpp

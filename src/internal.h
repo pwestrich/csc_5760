@@ -16,13 +16,21 @@
 extern std::vector<dispatch_queue_t*> *queues;
 extern pthread_mutex_t QUEUES_MUTEX;
 
+struct queue_item {
+
+	queue_function  work;			//function to be executed
+	void*			args;			//arguments to function
+	sem_t			sem_complete;	//semaphore to indicate completion (if needed)
+	bool			should_post;	//should the worker thread post the semaphore?
+
+};
+
 struct dispatch_queue_t {
 
 	int 						numThreads;	//number of concurrent threads in this queue
 	dispatch_queue_type 		type;		//the type of queue
 	std::string 				identifier;	//the string identifier for the queue
-	std::queue<queue_function> 	queue;		//the queue of functions
-	std::queue<void*> 			args;		//queue of arguments to functions
+	std::queue<queue_item*>	 	queue;		//the queue of functions
 	std::vector<pthread_t>		threads;	//worker threads
 	pthread_mutex_t 			queueMutex;	//mutex to get in the queue
 	sem_t						queueSem;	//semaphore to indicate to the worker threads that there is work to do

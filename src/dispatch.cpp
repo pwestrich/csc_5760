@@ -56,11 +56,50 @@ bool dispatch_async(dispatch_queue_t *queue, queue_function work, void *args){
 	if (queue && work){
 
 		pthread_mutex_lock(&queue->queueMutex);		//lock queue mutex
-			queue->queue.push(work);				//push work and arguments
-			queue->args.push(args);
+
+			queue_item *item = new queue_item;
+
+			item->work = work;
+			item->args = args;
+			item->should_post = false;
+
+			queue->queue.push(item);
+			
 		pthread_mutex_unlock(&queue->queueMutex);	//inlock mutex
 
 		sem_post(&queue->queueSem);					//post semaphore to tell worker functions to work
+
+		return true;
+
+	} else return false;
+
+}
+
+//adds a function to the queue and waits for its completion
+bool dispatch_sync(dispatch_queue_t *queue, queue_function work, void *args){
+
+	if (queue && work){
+
+		pthread_mutex_lock(&queue->queueMutex);		//lock queue mutex
+
+			queue_item *item = new queue_item;
+
+			item->work = work;
+			item->args = args;
+			item->should_post = true;
+
+			sem_init(&item->sem_complete, false, 0);
+
+			queue->queue.push(item);
+			
+		pthread_mutex_unlock(&queue->queueMutex);	//inlock mutex
+
+		//tell worker functions to work
+		sem_post(&queue->queueSem);
+
+		//wait for function to complete
+		sem_wait(&item->sem_complete);
+		sem_destroy(&item->sem_complete);
 
 		return true;
 
@@ -80,7 +119,7 @@ dispatch_queue_t* dispatch_create_queue(const std::string &name, const dispatch_
  	//no queues may ahve the same name
 	if (_searchForQueue(name)) return NULL;
 
-	dispatch_queue_t *newQ = new dispatch_queue_t;
+		dispatch_queue_t *newQ = new dispatch_queue_t;
 
 		newQ->type = type;
 		newQ->identifier = name;

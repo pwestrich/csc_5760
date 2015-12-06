@@ -11,7 +11,7 @@ SYS := $(shell $(CC) -dumpmachine)
 
 run: all
 
-	$(MAKE) -C ./test run
+	#$(MAKE) -C ./test run
 
 all: setup
 

@@ -1,70 +1,53 @@
 
+#include <cstdint>
 #include <iostream>
 #include <unistd.h>
 
 #include <pmw_dispatch/dispatch.h>
 
-void* test(void *args){
+#include "getRealTime.h"
+#include "matrix.h"
 
-	int *num = reinterpret_cast<int*>(args);
-
-	std::cout << "thread #" << *num << std::endl;
-
-	sleep(1);
-
-	delete num;
-	return NULL;
-
-}
+const int64_t SIZE		  = 1000;
+const int64_t NUM_THREADS = 4;
+const int64_t WAIT_TIME	  = 1000000;
 
 int main(const int argc, const char **argv){
 
 	dispatch_init();
 
-	//test the main queue
-	for (int i = 0; i < 10; ++i){
+	std::cout << "Creating matricies..." << std::endl;
+	std::cout << "Size: " << SIZE << ", Threads: " << NUM_THREADS << std::endl;
 
-		int *args = new int;
-		*args = i;
-		dispatch_async(dispatch_get_queue(MAIN_QUEUE), test, static_cast<void*>(args));
+	const double createStart = getRealTime();
 
-	}
+	Matrix *mat1 = createMatrix(SIZE);
+	Matrix *mat2 = createMatrix(SIZE);
+	Matrix *mat3 = createMatrix(SIZE);
 
-	sleep(1);
-	std::cout << "Waiting..." << std::endl;
-	sleep(10);
+	initMatrix(mat1);
+	initMatrix(mat2);
 
-	//now try making a new queue
-	dispatch_queue_t *newQueue = dispatch_create_queue("testQ", QUEUE_SERIAL);
+	const double createEnd = getRealTime();
+	const double createElapsed = createEnd - createStart;
 
-	//test the new queue
-	for (int i = 10; i < 20; ++i){
+	std::cout << "Matricies created. Took " << createElapsed << " seconds." << std::endl;
+	std::cout << "Multiplying..." << std::endl;
 
-		int *args = new int;
-		*args = i;
-		dispatch_async(newQueue, test, static_cast<void*>(args));
+	const double multiplyStart = getRealTime();
 
-	}
+	multiplyParallel(mat1, mat2, mat3, NUM_THREADS);
 
-	sleep(1);
-	std::cout << "Waiting again......" << std::endl;
-	sleep(10);
+	const double multiplyEnd = getRealTime();
+	const double multiplyElapsed = multiplyEnd - multiplyStart;
+	
+	std::cout << "Multiply finished. Took " << multiplyElapsed << " seconds." << std::endl;
 
-	//try making a concurrent queue
-	dispatch_queue_t *newQueue2 = dispatch_create_queue("testQ2", QUEUE_CONCORRENT, 2);
+	sleep(WAIT_TIME);
 
-	//test the concurrent queue
-	for (int i = 20; i < 30; ++i){
-
-		int *args = new int;
-		*args = i;
-		dispatch_async(newQueue2, test, static_cast<void*>(args));
-
-	}
-
-	sleep(1);
-	std::cout << "Waiting take three..." << std::endl;
-	sleep(10);
+	destroyMatrix(mat1);
+	destroyMatrix(mat2);
+	destroyMatrix(mat3);
 
 	disaptch_release();
 	return 0;
