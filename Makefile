@@ -48,7 +48,7 @@ $(info System detected to be GNU/Linux)
 
 INC_DIRS := -I../include
 LIB_DIRS := -L../lib
-LIBS 	 := -lpthread
+LIBS 	 := -lpthread -lrt
 
 RM 		 := rm -f
 MV 		 := mv
