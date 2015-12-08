@@ -8,10 +8,24 @@
 #include "getRealTime.h"
 #include "matrix.h"
 
-const int64_t SIZE		  = 1000;
-const int64_t NUM_THREADS = 4;
-
 int main(const int argc, const char **argv){
+
+	if (argc < 3){
+
+		std::cerr << "Error: too few arguments." << std::endl;
+		return 1;
+
+	}
+
+	const int64_t SIZE 		  = std::stoull(argv[1]);
+	const int64_t NUM_THREADS = std::stoull(argv[2]);
+
+	if (SIZE < 10 || NUM_THREADS < 1){
+
+		std::cerr << "Error: Invalid aruments " << SIZE << " and " << NUM_THREADS << std::endl;
+		return 1;
+
+	}
 
 	dispatch_init();
 
