@@ -1,0 +1,2 @@
+Starting with 16 proccesses and problem size 40000
+Finished. Took 6.23385 seconds in total, 0.695073 seconds initalizing, and 5.53877 seconds solving.

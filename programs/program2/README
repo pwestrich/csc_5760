@@ -1,0 +1,10 @@
+README
+
+To build the program, just run make.
+
+To run the program, do:
+
+./matrix_parallel <size> <num_threads>
+./matrix_serial <size>
+
+If you're running this on Shell or the cluster, there should be no building issues.

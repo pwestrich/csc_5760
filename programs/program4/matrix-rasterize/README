@@ -1,0 +1,34 @@
+
+ --- mrasterize ---
+ rasterize some matrix stuffs
+
+
+ --- by R.Marshall ---
+
+
+
+
+ requires freeImage library
+http://freeimage.sourceforge.net/
+
+ in Ubuntu:
+ apt-get libfreeimage-dev
+
+to build
+
+cd Debug
+make
+
+
+
+input files should be ASCII text, space delimited (see input/testin.txt)
+
+
+to run:
+
+./mraster <infile name> <num rows> <num cols>
+
+example:
+./mraster ../input/testin.txt 10 10
+
+will write ../input/testin.txt.gif

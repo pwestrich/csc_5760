@@ -1,0 +1,11 @@
+README
+
+To build the program, just run make.
+
+To run the program, do:
+
+./main_serial <size> <generations> 
+./main_omp <size> <generations> <num_threads>
+./main_serial_text <size> <generations>
+
+If you're running this on Shell or the cluster, there should be no building issues.
