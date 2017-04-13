@@ -1,7 +1,7 @@
 
 #utility information
 CXX      := g++
-CPPFLAGS := -std=c++11 -O0 -pedantic -Wall -Wextra -g
+CPPFLAGS := -std=c++11 -O3 -pedantic -Wall -Wextra
 LDFLAGS  :=
 AR 		 := ar -r
 RM 		 := rm -f

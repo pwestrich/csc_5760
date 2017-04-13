@@ -38,3 +38,5 @@
 
 #others
 test_main
+matrix_parallel
+matrix_serial
